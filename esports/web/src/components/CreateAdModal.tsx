@@ -2,8 +2,8 @@ import { useState, useEffect, FormEvent } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
-import * as Select from '@radix-ui/react-select';
-import { Check, GameController } from "phosphor-react";
+import * as Select from "@radix-ui/react-select";
+import { Check, GameController, CaretDown } from "phosphor-react";
 import axios from "axios";
 
 import { Input } from "./Form/Input";
@@ -17,6 +17,7 @@ export function CreateAdModal() {
   const [games, setGames] = useState<Game[]>([]);
   const [weekDays, setWeekDays] = useState<string[]>([]);
   const [useVoiceChannel, setUseVoiceChannel] = useState<boolean>(false);
+  const [gameId, setGameId] = useState<string>("");
 
   useEffect(() => {
     axios("http://localhost:3333/games").then((response) => {
@@ -24,32 +25,32 @@ export function CreateAdModal() {
     });
   }, []);
 
-  async function handleCreateAd(event: FormEvent) {
+  const handleCreateAd = (event: FormEvent) => {
     event.preventDefault();
 
     const formData = new FormData(event.target as HTMLFormElement);
     const data = Object.fromEntries(formData);
-
-    if(!data.name){
-      return
+    
+    if (!data.name) {
+      return;
     }
 
-    try{
-      await axios.post(`http://localhost:3333/games/${data.game}/ads`, {
-      name: data.name,
-      yearsPlaying: Number(data.yearsPlaying),
-      discord: data.discord,
-      weekDays: weekDays.map(Number),
-      hourStart: data.hourStart,
-      hourEnd: data.hourEnd,
-      useVoiceChannel: useVoiceChannel,
-    });
-     alert('Anúncio criado com sucesso.')
-    } catch(erro){
-      console.log(erro)
-      alert('Erro ao criar o anúncio')
+    try {
+      axios.post(`http://localhost:3333/games/${gameId}/ads`, {
+        name: data.name,
+        yearsPlaying: Number(data.yearsPlaying),
+        discord: data.discord,
+        weekDays: weekDays.map(Number),
+        hourStart: data.hourStart,
+        hourEnd: data.hourEnd,
+        useVoiceChannel: useVoiceChannel,
+      });
+      alert("Anúncio criado com sucesso.");
+    } catch (erro) {
+      console.log(erro);
+      alert("Erro ao criar o anúncio");
     }
-  }
+  };
 
   return (
     <Dialog.Portal>
@@ -59,33 +60,49 @@ export function CreateAdModal() {
         <Dialog.Title className="text-3xl font-black">
           Publique um anúncio
         </Dialog.Title>
-        <form onSubmit={handleCreateAd} className="mt-8 flex flex-col gap-4">
+        <form
+          onSubmit={handleCreateAd}
+          className="mt-8 flex flex-col gap-4"
+        >
           <div className="flex flex-col gap-2">
             <label htmlFor="game" className="font-semibold">
               Qual o game?
             </label>
+            <div className="bg-zinc-900 py-3 px-4 rounded flex flex-col">
+              <Select.Root onValueChange={setGameId}>
+                <Select.Trigger
+                  className={`flex justify-between items-center text-sm ${
+                    gameId ? "text-white" : "text-zinc-500"
+                  }`}
+                >
+                  <Select.Value placeholder="Selecione o game que deseja jogar" />
+                  <CaretDown className="text-white" />
+                </Select.Trigger>
 
-            
-
-            <select
-              className="bg-zinc-900 py-3 px-4 rounded text-sm placeholder:text-zinc-500"
-              id="game"
-              name="game"
-              defaultValue=""
-            >
-              <option disabled value="">
-                "Selecione o game que deseja jogar"
-              </option>
-
-              {games.map((game) => {
-                return (
-                  <option key={game.id} value={game.id}>
-                    {game.title}
-                  </option>
-                );
-              })}
-            </select>
-            
+                <Select.Portal>
+                  <Select.Content>
+                    <Select.ScrollUpButton />
+                    <Select.Viewport className="bg-zinc-800 py-3 px-4 rounded text-sm">
+                      {games.map((game) => {
+                        return (
+                          <Select.Item
+                            className="h-8 w-96 text-white hover:bg-zinc-900 rounded flex flex-1 gap-1 items-center pl-1 pr-1"
+                            value={game.id}
+                            key={game.id}
+                          >
+                            <Select.ItemText>{game.title}</Select.ItemText>
+                            <Select.ItemIndicator>
+                              <Check className="text-white" />
+                            </Select.ItemIndicator>
+                          </Select.Item>
+                        );
+                      })}
+                    </Select.Viewport>
+                    <Select.ScrollDownButton />
+                  </Select.Content>
+                </Select.Portal>
+              </Select.Root>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -101,8 +118,8 @@ export function CreateAdModal() {
             <div className="flex flex-col gap-2">
               <label htmlFor="yearsPlaying">Joga há quantos anos?</label>
               <Input
-                type="number"
                 name="yearsPlaying"
+                type="number"
                 id="yearsPlaying"
                 placeholder="Tudo bem ser ZERO"
               />
