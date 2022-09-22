@@ -21,5 +21,6 @@ Este sistema foi feito com base no treinamento da NLW. Ele consiste em 3 partes:
 
 - Criar um carrousel na página inicial (Já realizado)
 - Criar um select personalizado utilizando Radix (Já realizado)
+- Integração com a API da Twitch (Em andamento)
 - Criar uma validação dos dados no Back-End (Em andamento)
 - Criar um sistema de notificação mobile integrada com o Back-End (Em andamento)
