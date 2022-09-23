@@ -1,7 +1,7 @@
 export interface GameParams {
   id: string;
-  title: string;
-  bannerUrl: string;
+  name: string;
+  box_art_url: string;
 }
 
 export declare global {

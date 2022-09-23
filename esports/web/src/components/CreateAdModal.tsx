@@ -10,7 +10,7 @@ import { Input } from "./Form/Input";
 
 interface Game {
   id: string;
-  title: string;
+  name: string;
 }
 
 export function CreateAdModal() {
@@ -90,7 +90,7 @@ export function CreateAdModal() {
                             value={game.id}
                             key={game.id}
                           >
-                            <Select.ItemText>{game.title}</Select.ItemText>
+                            <Select.ItemText>{game.name}</Select.ItemText>
                             <Select.ItemIndicator>
                               <Check className="text-white" />
                             </Select.ItemIndicator>
